@@ -16,9 +16,10 @@ namespace WebAPISecurity.Controllers
     [ApiController]
     public class AuthController : ControllerBase
     {
-        private readonly List<CredentialsModel> _users = new List<CredentialsModel>
+        private readonly List<UserModel> _users = new List<UserModel>
         {
-            new CredentialsModel{ UserName = "karlus", Password = "123456"}
+            new UserModel{ Id = 1, UserName = "karlus", Password = "123456", IsSuperUser = true},
+            new UserModel{Id = 1, UserName = "karlus2", Password = "123456", IsSuperUser = false}
         };
         private readonly IConfiguration _config;
         public AuthController(IConfiguration configurationRoot)
@@ -38,6 +39,7 @@ namespace WebAPISecurity.Controllers
                 {
                     new Claim(JwtRegisteredClaimNames.Sid, user.UserName),
                     new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+                    new Claim("SuperUser", user.IsSuperUser.ToString())
                 };
 
                 var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config.GetValue<string>("Auth:Key")));

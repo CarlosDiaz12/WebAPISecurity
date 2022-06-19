@@ -69,6 +69,11 @@ namespace WebAPISecurity
                  };
              });
 
+            services.AddAuthorization(config =>
+            {
+                config.AddPolicy("SuperUsers", p => p.RequireClaim("SuperUser", "True"));
+            });
+
 
             // add data protection API
             services.AddDataProtection();

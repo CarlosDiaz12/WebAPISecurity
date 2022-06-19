@@ -12,6 +12,7 @@ namespace WebAPISecurity.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class BudgetCategoryController : ControllerBase
     {
         private readonly IMapper _mapper;
@@ -30,7 +31,7 @@ namespace WebAPISecurity.Controllers
         }
 
         [HttpGet]
-        [Authorize]
+        [Authorize(Policy = "SuperUsers")]
         public IActionResult Get()
         {
             var result = _mapper.Map<List<BudgetCategoryDto>>(_list);
