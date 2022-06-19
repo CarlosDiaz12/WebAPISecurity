@@ -1,12 +1,16 @@
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Linq;
-
+using System.Text;
 
 namespace WebAPISecurity
 {
@@ -31,14 +35,40 @@ namespace WebAPISecurity
             });
             */
 
-
             // cors policy
             services.AddCors(options =>
             {
-                options.AddPolicy(_corsPolicy, c => c.WithOrigins("http://127.0.0.1:5500"));
+                options.AddPolicy(_corsPolicy,
+                    c => c
+                            .WithOrigins("http://127.0.0.1:5500")
+                            .AllowAnyHeader()
+                            .AllowAnyMethod()
+                    );
             });
 
             services.AddControllers();
+            // jwt authentication
+            services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
+             .AddJwtBearer(options =>
+             {
+                 options.RequireHttpsMetadata = false;
+                 options.TokenValidationParameters = new TokenValidationParameters
+                 {
+                     
+                     ValidateIssuer = true,
+                     ValidateAudience = true,
+                     ValidateLifetime = true,
+                     ValidateIssuerSigningKey = true,
+                     ValidIssuer = Configuration["Auth:Issuer"],
+                     ValidAudience = Configuration["Auth:Audience"],
+                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["Auth:Key"]))
+                 };
+             });
+
 
             // add data protection API
             services.AddDataProtection();
@@ -46,18 +76,15 @@ namespace WebAPISecurity
             var serviceProvider = services.FirstOrDefault(x => x.ServiceType == typeof(IDataProtectionProvider));
             services.AddAutoMapper(options =>
             {
-                var strConstants = new StringConstants();
                 options.ConstructServicesUsing(type => new IdProtectorConverter(serviceProvider as IDataProtectionProvider));
             },
             AppDomain.CurrentDomain.GetAssemblies());
-            
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(
-            IApplicationBuilder app, 
-            IWebHostEnvironment env)
-        {            
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        {
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
@@ -65,9 +92,9 @@ namespace WebAPISecurity
 
 
             app.UseCors(_corsPolicy);
-
             app.UseRouting();
 
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>

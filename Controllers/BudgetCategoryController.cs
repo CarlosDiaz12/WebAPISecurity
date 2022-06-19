@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -28,7 +29,8 @@ namespace WebAPISecurity.Controllers
             _mapper = mapper;
         }
 
-        [HttpGet()]
+        [HttpGet]
+        [Authorize]
         public IActionResult Get()
         {
             var result = _mapper.Map<List<BudgetCategoryDto>>(_list);
