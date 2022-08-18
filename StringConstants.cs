@@ -1,7 +1,7 @@
 ﻿namespace WebAPISecurity
 {
-    public class StringConstants
+    public static class StringConstants
     {
-        public string IdQryStr => "AppIdString";
+        public static string IdQryStr => "AppIdString";
     }
 }

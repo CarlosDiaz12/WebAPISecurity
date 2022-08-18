@@ -25,8 +25,7 @@ namespace WebAPISecurity.Controllers
 
         public BudgetCategoryController(IMapper mapper, IDataProtectionProvider dataProtectionProvider)
         {
-            var constants = new StringConstants();
-            dataProtector = dataProtectionProvider.CreateProtector(constants.IdQryStr);
+            dataProtector = dataProtectionProvider.CreateProtector(StringConstants.IdQryStr);
             _mapper = mapper;
         }
 

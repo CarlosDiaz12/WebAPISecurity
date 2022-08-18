@@ -40,7 +40,7 @@ namespace WebAPISecurity
             {
                 options.AddPolicy(_corsPolicy,
                     c => c
-                            .WithOrigins("http://127.0.0.1:5500")
+                            .WithOrigins("http://127.0.0.1:5500", "http://localhost:4200")
                             .AllowAnyHeader()
                             .AllowAnyMethod()
                     );
