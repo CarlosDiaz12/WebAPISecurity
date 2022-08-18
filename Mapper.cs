@@ -9,8 +9,7 @@ namespace WebAPISecurity
             private readonly IDataProtector protector;
             public IdProtectorConverter(IDataProtectionProvider dataProtectionProvider)
             {
-            var stringConstants = new StringConstants();
-                protector = dataProtectionProvider.CreateProtector(stringConstants.IdQryStr);
+                protector = dataProtectionProvider.CreateProtector(StringConstants.IdQryStr);
             }
             public BudgetCategoryDto Convert(BudgetCategory source, BudgetCategoryDto destination, ResolutionContext context)
             {
